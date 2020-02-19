@@ -9,10 +9,13 @@ fun hello(): String {
     return "Hello, world!"
 }
 fun main() {
-    embeddedServer(Netty, 8080) {
+    embeddedServer(Netty, 8008) {
         routing {
             get("/") {
-                call.respondText("Hello, world!")
+                call.respondText(hello())
+            }
+            get("/test") {
+                call.respondText("Testing")
             }
         }
     }.start(wait = true)
