@@ -16,9 +16,10 @@ dependencies {
     val ktorVersion = "1.3.0"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-gson:$ktorVersion")
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
-    testImplementation("org.slf4j:slf4j-simple:1.7.26")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }
 tasks.withType<Test> {
     useJUnitPlatform()
