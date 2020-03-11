@@ -6,9 +6,11 @@ import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -16,10 +18,25 @@ import io.ktor.server.netty.Netty
 fun hello(): String {
     return "Hello, world!"
 }
-data class AddResult(val first: Int, val second: Int, val result: Int)
+
+data class Result(val operation: String, val first: Int, val second: Int, val result: Int)
+data class CalculatorRequest(
+    val operation: String, val first: Int, val second: Int
+) {
+    val result: Result
+    init {
+        val mathResult = when (operation) {
+            "add" -> first + second
+            "multiply" -> first * second
+            else -> throw Exception("${operation} is not supported")
+        }
+        result = Result(operation, first, second, mathResult)
+    }
+}
 
 fun Application.adder() {
     val counts: MutableMap<String, Int> = mutableMapOf()
+
     install(ContentNegotiation) {
         gson { }
     }
@@ -32,12 +49,10 @@ fun Application.adder() {
             counts[call.parameters["first"].toString()] = firstCount
             call.respondText(firstCount.toString())
         }
-        get("/add/{first}/{second}") {
+        post("/calculate") {
             try {
-                val first = call.parameters["first"]!!.toInt()
-                val second = call.parameters["second"]!!.toInt()
-                val addResult = AddResult(first, second, first + second)
-                call.respond(addResult)
+                val request = call.receive<CalculatorRequest>()
+                call.respond(request.result)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest)
             }
