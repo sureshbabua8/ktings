@@ -8,6 +8,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+//    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -20,6 +21,8 @@ dependencies {
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+
+//    compile("com.github.moove-it:fakeit:v0.5")
 }
 tasks.withType<Test> {
     useJUnitPlatform()
