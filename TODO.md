@@ -3,3 +3,4 @@
 * design grade component endpoints
 * generate fake data to use as example
 * use Kotlin-statistics to calculate statistics on website
+* make POST requests for statistics?
