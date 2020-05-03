@@ -8,7 +8,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-//    maven(url = "https://jitpack.io")
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -19,6 +19,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-gson:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
+    compile("com.github.thomasnield:kotlin-statistics:-SNAPSHOT")
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")

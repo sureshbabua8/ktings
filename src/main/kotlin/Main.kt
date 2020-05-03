@@ -54,6 +54,24 @@ fun Application.analyzeCourse() {
             call.respondText(course.welcome())
         }
 
+        get("/{first}") {
+            val id = call.parameters["first"]
+            when (id) {
+                "course" -> call.respondText("Course is doing fine!")
+                else -> {
+                    if (course.students.containsKey(id)) {
+                        val withoutDrops = course.students[id]!!.getOverallGradeNoDrops()
+                        val withDrops = course.students[id]!!.getOverallGradeDrops()
+                        call.respondText("$id's overall grade without drops is $withoutDrops " +
+                                "\n$id's overall grade with drops is $withDrops")
+                    } else {
+                        call.respondText("invalid netid!")
+                    }
+
+                }
+            }
+        }
+
         get("/addStudent/{netid}") {
             val student = call.parameters["netid"]!!
             course.students.putIfAbsent(student, Student(student))
