@@ -83,72 +83,166 @@ class Student(val netid: String, var grade: Double) {
         }
     }
 
-    fun calculateGradeDrops(gradeType: String): Double {
+    fun calculateGradeDrops(gradeType: String): Double? {
         when (gradeType) {
             "Lab" -> {
-                return labs.reduce { result, value ->
-                    result + value
-                } / labs.size
+                if (labs.size > 3) {
+                    labs.sort()
+                    val labDrops = labs.subList(3, labs.size) // 3 lowest labs dropped
+
+                    grades["LabWithDrops"] = (labDrops.reduce { result, value ->
+                        result + value
+                    } / labDrops.size)*100.0
+
+                    return grades["LabWithDrops"]
+                } else {
+                    calculateGradeNoDrops("Lab")
+                }
+
             }
             "Lecture" -> {
-                return lectures.reduce { result, value ->
-                    result + value
-                } / lectures.size
+                if (lectures.size > 6) {
+                    lectures.sort()
+                    val lectureDrops = lectures.subList(6, lectures.size)
+                    grades["LectureWithDrops"] = (lectureDrops.reduce { result, value ->
+                        result + value
+                    } / lectureDrops.size)*100.0
+
+                    return grades["LectureWithDrops"]
+                } else {
+                    calculateGradeNoDrops("Lecture")
+                }
+
             }
             "MP" -> {
-                return mps.reduce { result, value ->
-                    result + value
-                } / mps.size
+                if (mps.size > 1) {
+                    mps.sort()
+                    val mpDrops = mps.subList(1, mps.size)
+                    grades["MPWithDrops"] = (mpDrops.reduce { result, value ->
+                        result + value
+                    } / mpDrops.size)*100.0
+                    return grades["MPWithDrops"]
+                } else {
+                    calculateGradeNoDrops("MP")
+                }
+
             }
             "Homework" -> {
-                return homeworks.reduce { result, value ->
-                    result + value
-                } / homeworks.size
+                if (homeworks.size > 12) {
+                    homeworks.sort()
+                    val hwDrops = homeworks.subList(12, homeworks.size)
+                    grades["HomeworkWithDrops"] = (hwDrops.reduce { result, value ->
+                        result + value
+                    } / hwDrops.size)*100.0
+                    return grades["HomeworkWithDrops"]
+                } else {
+                    calculateGradeNoDrops("Homework")
+                }
+
             }
             "Exam" -> {
-                return exams.reduce { result, value ->
+                grades["Exam"] = (exams.reduce { result, value ->
                     result + value
-                } / exams.size
+                } / exams.size)*100.0
+                return grades["Exam"]
             }
             "Quiz" -> {
-                return quizzes.reduce { result, value ->
-                    result + value
-                } / quizzes.size
+                if (quizzes.size > 3) {
+                    quizzes.sort()
+                    val quizDrops = quizzes.subList(3, quizzes.size)
+                    grades["QuizWithDrops"] = (quizDrops.reduce { result, value ->
+                        result + value
+                    } / quizDrops.size)*100.0
+                    return grades["QuizWithDrops"]
+                } else {
+                    return calculateGradeDrops("Quiz")
+                }
+
             }
             "Final Project" -> {
+                grades["Final Project"] = finalProject
                 return finalProject
             }
         }
 
-        return 0.0
+        return 100.0
     }
 
-    fun calculateGradeNoDrops(gradeType: String): Double {
+    fun calculateGradeNoDrops(gradeType: String): Double? {
         when (gradeType) {
             "Lab" -> {
+                if (labs.isNotEmpty()) {
+                    grades["Lab"] = (labs.reduce { result, value ->
+                        result + value
+                    } / labs.size)*100.0
+
+                    return grades["Lab"]
+                }
 
             }
             "Lecture" -> {
+                if (lectures.isNotEmpty()) {
+                    grades["Lecture"] = (lectures.reduce { result, value ->
+                        result + value
+                    } / lectures.size)*100.0
 
+                    return grades["Lecture"]
+                }
             }
             "MP" -> {
+                if (mps.isNotEmpty()) {
+                    grades["MP"] = (mps.reduce { result, value ->
+                        result + value
+                    } / mps.size)*100.0
+                    return grades["MP"]
+                }
 
             }
             "Homework" -> {
-
+                if (homeworks.isNotEmpty()) {
+                    grades["Homework"] = (homeworks.reduce { result, value ->
+                        result + value
+                    } / homeworks.size)*100.0
+                    return grades["Homework"]
+                }
             }
             "Exam" -> {
-
+                if (exams.isNotEmpty()) {
+                    grades["Exam"] = (exams.reduce { result, value ->
+                        result + value
+                    } / exams.size)*100.0
+                    return grades["Exam"]
+                }
             }
             "Quiz" -> {
-
+                if (quizzes.isNotEmpty()) {
+                    grades["Quiz"] = (quizzes.reduce { result, value ->
+                        result + value
+                    } / quizzes.size)*100.0
+                    return grades["Quiz"]
+                }
             }
             "Final Project" -> {
-                return finalProject
+                if (finalProject > 0.0) {
+                    grades["Final Project"] = finalProject
+                    return finalProject
+                }
             }
         }
 
-        return 0.0
+        return 100.0
+    }
+
+    fun getOverallGradeDrops(): Double? {
+        var grade = 0.0
+        // calculate components first
+        // calculate lab grade
+        // calculate lecture grade
+        // calculate
+    }
+
+    fun getOverallGradeNoDrops(): Double? {
+       return 0.0
     }
 
 
