@@ -79,7 +79,7 @@ class Student(val netid: String, var grade: Double) {
             "Homework" -> homeworks.add(assignment)
             "Exam" -> exams.add(assignment)
             "Quiz" -> exams.add(assignment)
-            // use setter to set final project grade
+            "Final Project" -> setFinalProject(assignment)
         }
     }
 
@@ -160,8 +160,10 @@ class Student(val netid: String, var grade: Double) {
 
             }
             "Final Project" -> {
-                grades["Final Project"] = finalProject
-                return finalProject
+                if (finalProject > 0.0) {
+                    grades["Final Project"] = finalProject
+                    return finalProject
+                }
             }
         }
 
@@ -234,15 +236,35 @@ class Student(val netid: String, var grade: Double) {
     }
 
     fun getOverallGradeDrops(): Double? {
-        var grade = 0.0
-        // calculate components first
-        // calculate lab grade
-        // calculate lecture grade
-        // calculate
+        // update components first
+        calculateGradeDrops("Lab")
+        calculateGradeDrops("Lecture")
+        calculateGradeDrops("Homework")
+        calculateGradeDrops("Quizzes")
+        calculateGradeDrops("Exam")
+        calculateGradeDrops("MP")
+        calculateGradeNoDrops("Final Project")
+
+        // calculate sum
+        return (grades["LabWithDrops"]?.times(0.05) ?: 5.0) + (grades["LectureWithDrops"]?.times(0.05) ?: 5.0) +
+                (grades["HomeworkWithDrops"]?.times(0.20) ?: 20.0) + (grades["QuizzesWithDrops"]?.times(0.24) ?: 24.0) +
+                (grades["Exam"]?.times(0.06) ?: 6.0) + (grades["MPWithDrops"]?.times(0.30) ?: 30.0) + (grades["Final Project"]?.times(0.10) ?: 10.0)
+
     }
 
     fun getOverallGradeNoDrops(): Double? {
-       return 0.0
+        // update components first
+        calculateGradeNoDrops("Lab")
+        calculateGradeNoDrops("Lecture")
+        calculateGradeNoDrops("Homework")
+        calculateGradeNoDrops("Quizzes")
+        calculateGradeNoDrops("Exam")
+        calculateGradeNoDrops("MP")
+
+        // calculate sum
+        return (grades["Lab"]?.times(0.05) ?: 5.0) + (grades["Lecture"]?.times(0.05) ?: 5.0) +
+                (grades["Homework"]?.times(0.20) ?: 20.0) + (grades["Quizzes"]?.times(0.24) ?: 24.0) +
+                (grades["Exam"]?.times(0.06) ?: 6.0) + (grades["MP"]?.times(0.30) ?: 30.0) + (grades["Final Project"]?.times(0.10) ?: 10.0)
     }
 
 
