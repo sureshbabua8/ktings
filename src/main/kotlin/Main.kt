@@ -13,15 +13,30 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 
+val students: MutableMap<String, Student> = mutableMapOf()
+
 fun initCourse(): String {
     return "Welcome to CS 125!"
 }
 
+fun initStudents(): Unit {
+    addStudent("as43")
+    addStudent("hdeep2")
+    addStudent("nikhilg4")
+    addStudent("challen")
+}
+
+fun addStudent(netid: String): Unit {
+    students[netid] = Student(netid)
+}
+
 fun Application.analyzeCourse() {
-    val students: MutableMap<String, Student> = mutableMapOf()
+    initStudents()
+
     install(ContentNegotiation) {
         gson { }
     }
+
     routing {
         get("/") {
             call.respondText(initCourse())
