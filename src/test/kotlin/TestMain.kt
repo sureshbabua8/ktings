@@ -11,7 +11,7 @@ import io.ktor.server.testing.withTestApplication
 
 class TestMain : StringSpec({
     "should retrieve root path properly" {
-        withTestApplication(Application::adder) {
+        withTestApplication(Application::analyzeCourse) {
             handleRequest(HttpMethod.Get, "/").apply {
                 response.status() shouldBe HttpStatusCode.OK
                 response.content shouldBe "Hello, world!"
@@ -19,7 +19,7 @@ class TestMain : StringSpec({
         }
     }
     "should accept post calculate request" {
-        withTestApplication(Application::adder) {
+        withTestApplication(Application::analyzeCourse) {
             handleRequest(HttpMethod.Post, "/calculate") {
                 addHeader("content-type", "application/json")
                 setBody("""
@@ -35,7 +35,7 @@ class TestMain : StringSpec({
         }
     }
     "should count routes properly" {
-        withTestApplication(Application::adder) {
+        withTestApplication(Application::analyzeCourse) {
             handleRequest(HttpMethod.Get, "/count/first").apply {
                 response.status() shouldBe HttpStatusCode.OK
                 response.content shouldBe "1"
