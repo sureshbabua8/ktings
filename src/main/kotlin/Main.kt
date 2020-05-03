@@ -2,6 +2,7 @@
 
 package hello
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import io.ktor.application.Application
@@ -10,6 +11,7 @@ import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
+import io.ktor.jackson.jackson
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
@@ -18,6 +20,7 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import java.lang.Compiler.enable
 
 data class Course(val students: MutableMap<String, Student>) {
     init {
@@ -41,7 +44,9 @@ private var course = Course(mutableMapOf())
 fun Application.analyzeCourse() {
 
     install(ContentNegotiation) {
-        gson { }
+        gson {
+            setPrettyPrinting()
+        }
     }
 
     routing {
@@ -67,11 +72,14 @@ fun Application.analyzeCourse() {
 
         post("/gradebook") {
             try {
-                val gson = Gson()
-                call.respond("successful")
+                call.respond(call.receive<JsonObject>())
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest)
             }
+        }
+
+        get("/gradebook") {
+            call.respond(course)
         }
 
     }
