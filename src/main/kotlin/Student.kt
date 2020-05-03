@@ -1,6 +1,6 @@
 package hello
 
-class Student(val netid: String, var grade: Double) {
+class Student(val netid: String) {
     private var grades = mutableMapOf<String, Double>()
     private var labs = mutableListOf<Double>()
     private var homeworks = mutableListOf<Double>()
@@ -92,7 +92,7 @@ class Student(val netid: String, var grade: Double) {
 
                     grades["LabWithDrops"] = (labDrops.reduce { result, value ->
                         result + value
-                    } / labDrops.size)*100.0
+                    } / labDrops.size)
 
                     return grades["LabWithDrops"]
                 } else {
@@ -106,7 +106,7 @@ class Student(val netid: String, var grade: Double) {
                     val lectureDrops = lectures.subList(6, lectures.size)
                     grades["LectureWithDrops"] = (lectureDrops.reduce { result, value ->
                         result + value
-                    } / lectureDrops.size)*100.0
+                    } / lectureDrops.size)
 
                     return grades["LectureWithDrops"]
                 } else {
@@ -120,7 +120,7 @@ class Student(val netid: String, var grade: Double) {
                     val mpDrops = mps.subList(1, mps.size)
                     grades["MPWithDrops"] = (mpDrops.reduce { result, value ->
                         result + value
-                    } / mpDrops.size)*100.0
+                    } / mpDrops.size)
                     return grades["MPWithDrops"]
                 } else {
                     calculateGradeNoDrops("MP")
@@ -133,7 +133,7 @@ class Student(val netid: String, var grade: Double) {
                     val hwDrops = homeworks.subList(12, homeworks.size)
                     grades["HomeworkWithDrops"] = (hwDrops.reduce { result, value ->
                         result + value
-                    } / hwDrops.size)*100.0
+                    } / hwDrops.size)
                     return grades["HomeworkWithDrops"]
                 } else {
                     calculateGradeNoDrops("Homework")
@@ -141,10 +141,12 @@ class Student(val netid: String, var grade: Double) {
 
             }
             "Exam" -> {
-                grades["Exam"] = (exams.reduce { result, value ->
-                    result + value
-                } / exams.size)*100.0
-                return grades["Exam"]
+                if (exams.isNotEmpty()) {
+                    grades["Exam"] = (exams.reduce { result, value ->
+                        result + value
+                    } / exams.size)
+                    return grades["Exam"]
+                }
             }
             "Quiz" -> {
                 if (quizzes.size > 3) {
@@ -152,7 +154,7 @@ class Student(val netid: String, var grade: Double) {
                     val quizDrops = quizzes.subList(3, quizzes.size)
                     grades["QuizWithDrops"] = (quizDrops.reduce { result, value ->
                         result + value
-                    } / quizDrops.size)*100.0
+                    } / quizDrops.size)
                     return grades["QuizWithDrops"]
                 } else {
                     return calculateGradeDrops("Quiz")
@@ -176,7 +178,7 @@ class Student(val netid: String, var grade: Double) {
                 if (labs.isNotEmpty()) {
                     grades["Lab"] = (labs.reduce { result, value ->
                         result + value
-                    } / labs.size)*100.0
+                    } / labs.size)
 
                     return grades["Lab"]
                 }
@@ -186,7 +188,7 @@ class Student(val netid: String, var grade: Double) {
                 if (lectures.isNotEmpty()) {
                     grades["Lecture"] = (lectures.reduce { result, value ->
                         result + value
-                    } / lectures.size)*100.0
+                    } / lectures.size)
 
                     return grades["Lecture"]
                 }
@@ -195,7 +197,7 @@ class Student(val netid: String, var grade: Double) {
                 if (mps.isNotEmpty()) {
                     grades["MP"] = (mps.reduce { result, value ->
                         result + value
-                    } / mps.size)*100.0
+                    } / mps.size)
                     return grades["MP"]
                 }
 
@@ -204,7 +206,7 @@ class Student(val netid: String, var grade: Double) {
                 if (homeworks.isNotEmpty()) {
                     grades["Homework"] = (homeworks.reduce { result, value ->
                         result + value
-                    } / homeworks.size)*100.0
+                    } / homeworks.size)
                     return grades["Homework"]
                 }
             }
@@ -212,7 +214,7 @@ class Student(val netid: String, var grade: Double) {
                 if (exams.isNotEmpty()) {
                     grades["Exam"] = (exams.reduce { result, value ->
                         result + value
-                    } / exams.size)*100.0
+                    } / exams.size)
                     return grades["Exam"]
                 }
             }
@@ -220,7 +222,7 @@ class Student(val netid: String, var grade: Double) {
                 if (quizzes.isNotEmpty()) {
                     grades["Quiz"] = (quizzes.reduce { result, value ->
                         result + value
-                    } / quizzes.size)*100.0
+                    } / quizzes.size)
                     return grades["Quiz"]
                 }
             }

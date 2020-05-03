@@ -20,6 +20,7 @@ dependencies {
     implementation("io.ktor:ktor-gson:$ktorVersion")
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 
 //    compile("com.github.moove-it:fakeit:v0.5")
