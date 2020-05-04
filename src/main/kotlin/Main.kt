@@ -77,7 +77,7 @@ fun Application.viewCourse() {
                     if (course.students.containsKey(id)) {
                         call.respond(course.students[id]!!)
                     } else {
-                        call.respondText("Invalid call!")
+                        call.respond(HttpStatusCode.BadRequest)
                     }
                 }
             }
