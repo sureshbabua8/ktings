@@ -1,272 +1,176 @@
 package hello
 
+enum class compNames(val type: String, val minDropped: Int, val weight: Double) {
+    Lab("Lab", 3, 0.05), Homework("Homework", 12, 0.20), MP("MP", 1, 0.30),
+    final_Project("Final Project", 0, 0.10), Quiz("Quiz", 3, 0.24),
+    Exam("Exam", 0, 0.06), Lecture("Lecture", 6, 0.05)
+}
+
+data class Component(val type: compNames, var grade: Double) {
+    private var assignments = mutableListOf<Double>()
+
+    fun getAssignments(): MutableList<Double> {
+        return assignments
+    }
+
+    fun setAssignment(list: MutableList<Double>): Unit {
+        this.assignments = list
+    }
+
+    fun addAssignment(assignment: Double): Unit {
+        assignments.add(assignment)
+    }
+
+    fun gradeWithDrops(): Double {
+        return if (assignments.size > type.minDropped) {
+            assignments.sort()
+            val drops = assignments.subList(type.minDropped, assignments.size) // excludes dropped assignments
+
+            drops.reduce { result, value ->
+                result + value
+            } / drops.size
+        } else {
+            gradeWOutDrops()
+        }
+    }
+
+    fun gradeWOutDrops(): Double {
+        return if (assignments.isNotEmpty()) {
+            assignments.reduce { result, value ->
+                result + value
+            } / assignments.size
+        } else {
+            100.0
+        }
+    }
+}
+
 class Student(val netid: String) {
-    private var grades = mutableMapOf<String, Double>()
-    private var labs = mutableListOf<Double>()
-    private var homeworks = mutableListOf<Double>()
-    private var mps = mutableListOf<Double>()
-    private var finalProject: Double = 0.0
-    private var quizzes = mutableListOf<Double>()
-    private var exams = mutableListOf<Double>()
-    private var lectures = mutableListOf<Double>()
+
+    private var grades = mutableMapOf<String, Component>()
+    private var gradeWithDrops: Double
+    private var gradeNoDrops: Double
+
+    init {
+        for (comp in compNames.values()) {
+            grades[comp.type] = Component(comp, 100.0)
+        }
+
+        gradeWithDrops = 100.0
+        gradeNoDrops = 100.0
+    }
 
     // getters
 
     fun getLabs(): MutableList<Double> {
-        return labs
+        return grades["Lab"]!!.getAssignments()
     }
 
     fun getHomeworks(): MutableList<Double> {
-        return homeworks
+        return grades["Homework"]!!.getAssignments()
     }
 
     fun getMps(): MutableList<Double> {
-        return mps
+        return grades["MP"]!!.getAssignments()
     }
 
-    fun getFinalProject(): Double {
-        return finalProject
+    fun getFinalProject(): MutableList<Double> {
+        return grades["Final Project"]!!.getAssignments()
     }
 
     fun getQuizzes(): MutableList<Double> {
-        return quizzes
+        return grades["Quiz"]!!.getAssignments()
     }
 
     fun getExams(): MutableList<Double> {
-        return exams
+        return grades["Exam"]!!.getAssignments()
     }
 
     fun getLectures(): MutableList<Double> {
-        return lectures
+        return grades["Lecture"]!!.getAssignments()
     }
 
     // setters
     fun setLabs(setList: MutableList<Double>): Unit {
-        this.labs = setList
+        grades["Lab"]!!.setAssignment(setList)
     }
 
     fun setHomeworks(setList: MutableList<Double>): Unit {
-        this.homeworks = setList
+        grades["Homework"]!!.setAssignment(setList)
     }
 
     fun setMps(setList: MutableList<Double>): Unit {
-        this.mps = setList
+        grades["MP"]!!.setAssignment(setList)
     }
 
     fun setQuizzes(setList: MutableList<Double>): Unit {
-        this.quizzes = setList
+        grades["Quiz"]!!.setAssignment(setList)
     }
 
     fun setExams(setList: MutableList<Double>): Unit {
-        this.exams = setList
+        grades["Exam"]!!.setAssignment(setList)
     }
 
     fun setLectures(setList: MutableList<Double>): Unit {
-        this.lectures = setList
+        grades["Lecture"]!!.setAssignment(setList)
     }
 
     fun setFinalProject(setProject: Double): Unit {
-        this.finalProject = setProject
+        grades["Lab"]!!.setAssignment(mutableListOf(setProject))
     }
 
     // logistics
 
     fun addGrade(assignment: Double, assnType: String): Unit {
-        when (assnType) {
-            "Lab" -> labs.add(assignment)
-            "Lecture" -> lectures.add(assignment)
-            "MP" -> mps.add(assignment)
-            "Homework" -> homeworks.add(assignment)
-            "Exam" -> exams.add(assignment)
-            "Quiz" -> exams.add(assignment)
-            "Final Project" -> setFinalProject(assignment)
+        if (grades.containsKey(assnType)) {
+            grades[assnType]!!.addAssignment(assignment)
         }
     }
 
     fun calculateGradeDrops(gradeType: String): Double? {
-        when (gradeType) {
-            "Lab" -> {
-                if (labs.size > 3) {
-                    labs.sort()
-                    val labDrops = labs.subList(3, labs.size) // 3 lowest labs dropped
-
-                    grades["LabWithDrops"] = (labDrops.reduce { result, value ->
-                        result + value
-                    } / labDrops.size)
-
-                    return grades["LabWithDrops"]
-                } else {
-                    calculateGradeNoDrops("Lab")
-                }
-
-            }
-            "Lecture" -> {
-                if (lectures.size > 6) {
-                    lectures.sort()
-                    val lectureDrops = lectures.subList(6, lectures.size)
-                    grades["LectureWithDrops"] = (lectureDrops.reduce { result, value ->
-                        result + value
-                    } / lectureDrops.size)
-
-                    return grades["LectureWithDrops"]
-                } else {
-                    calculateGradeNoDrops("Lecture")
-                }
-
-            }
-            "MP" -> {
-                if (mps.size > 1) {
-                    mps.sort()
-                    val mpDrops = mps.subList(1, mps.size)
-                    grades["MPWithDrops"] = (mpDrops.reduce { result, value ->
-                        result + value
-                    } / mpDrops.size)
-                    return grades["MPWithDrops"]
-                } else {
-                    calculateGradeNoDrops("MP")
-                }
-
-            }
-            "Homework" -> {
-                if (homeworks.size > 12) {
-                    homeworks.sort()
-                    val hwDrops = homeworks.subList(12, homeworks.size)
-                    grades["HomeworkWithDrops"] = (hwDrops.reduce { result, value ->
-                        result + value
-                    } / hwDrops.size)
-                    return grades["HomeworkWithDrops"]
-                } else {
-                    calculateGradeNoDrops("Homework")
-                }
-
-            }
-            "Exam" -> {
-                if (exams.isNotEmpty()) {
-                    grades["Exam"] = (exams.reduce { result, value ->
-                        result + value
-                    } / exams.size)
-                    return grades["Exam"]
-                }
-            }
-            "Quiz" -> {
-                if (quizzes.size > 3) {
-                    quizzes.sort()
-                    val quizDrops = quizzes.subList(3, quizzes.size)
-                    grades["QuizWithDrops"] = (quizDrops.reduce { result, value ->
-                        result + value
-                    } / quizDrops.size)
-                    return grades["QuizWithDrops"]
-                } else {
-                    return calculateGradeDrops("Quiz")
-                }
-
-            }
-            "Final Project" -> {
-                if (finalProject > 0.0) {
-                    grades["Final Project"] = finalProject
-                    return finalProject
-                }
-            }
+        return if (grades.containsKey(gradeType)) {
+            grades[gradeType]!!.gradeWithDrops()
+        } else {
+            0.0
         }
-
-        return 100.0
     }
 
     fun calculateGradeNoDrops(gradeType: String): Double? {
-        when (gradeType) {
-            "Lab" -> {
-                if (labs.isNotEmpty()) {
-                    grades["Lab"] = (labs.reduce { result, value ->
-                        result + value
-                    } / labs.size)
-
-                    return grades["Lab"]
-                }
-
-            }
-            "Lecture" -> {
-                if (lectures.isNotEmpty()) {
-                    grades["Lecture"] = (lectures.reduce { result, value ->
-                        result + value
-                    } / lectures.size)
-
-                    return grades["Lecture"]
-                }
-            }
-            "MP" -> {
-                if (mps.isNotEmpty()) {
-                    grades["MP"] = (mps.reduce { result, value ->
-                        result + value
-                    } / mps.size)
-                    return grades["MP"]
-                }
-
-            }
-            "Homework" -> {
-                if (homeworks.isNotEmpty()) {
-                    grades["Homework"] = (homeworks.reduce { result, value ->
-                        result + value
-                    } / homeworks.size)
-                    return grades["Homework"]
-                }
-            }
-            "Exam" -> {
-                if (exams.isNotEmpty()) {
-                    grades["Exam"] = (exams.reduce { result, value ->
-                        result + value
-                    } / exams.size)
-                    return grades["Exam"]
-                }
-            }
-            "Quiz" -> {
-                if (quizzes.isNotEmpty()) {
-                    grades["Quiz"] = (quizzes.reduce { result, value ->
-                        result + value
-                    } / quizzes.size)
-                    return grades["Quiz"]
-                }
-            }
-            "Final Project" -> {
-                if (finalProject > 0.0) {
-                    grades["Final Project"] = finalProject
-                    return finalProject
-                }
-            }
+        return if (grades.containsKey(gradeType)) {
+            grades[gradeType]!!.gradeWOutDrops()
+        } else {
+            0.0
         }
-
-        return 100.0
     }
 
     fun getOverallGradeDrops(): Double? {
         // update components first
-        calculateGradeDrops("Lab")
-        calculateGradeDrops("Lecture")
-        calculateGradeDrops("Homework")
-        calculateGradeDrops("Quizzes")
-        calculateGradeDrops("Exam")
-        calculateGradeDrops("MP")
-        calculateGradeNoDrops("Final Project")
+        for (comp in grades.values) {
+            comp.gradeWithDrops()
+        }
 
-        // calculate sum
-        return (grades["LabWithDrops"]?.times(0.05) ?: 5.0) + (grades["LectureWithDrops"]?.times(0.05) ?: 5.0) +
-                (grades["HomeworkWithDrops"]?.times(0.20) ?: 20.0) + (grades["QuizzesWithDrops"]?.times(0.24) ?: 24.0) +
-                (grades["Exam"]?.times(0.06) ?: 6.0) + (grades["MPWithDrops"]?.times(0.30) ?: 30.0) + (grades["Final Project"]?.times(0.10) ?: 10.0)
+        var grade = 0.0
 
+        for (comp in grades.values) {
+            grade += comp.gradeWithDrops()*comp.type.weight
+        }
+
+        return grade
     }
 
     fun getOverallGradeNoDrops(): Double? {
         // update components first
-        calculateGradeNoDrops("Lab")
-        calculateGradeNoDrops("Lecture")
-        calculateGradeNoDrops("Homework")
-        calculateGradeNoDrops("Quizzes")
-        calculateGradeNoDrops("Exam")
-        calculateGradeNoDrops("MP")
+        for (comp in grades.values) {
+            comp.gradeWOutDrops()
+        }
 
-        // calculate sum
-        return (grades["Lab"]?.times(0.05) ?: 5.0) + (grades["Lecture"]?.times(0.05) ?: 5.0) +
-                (grades["Homework"]?.times(0.20) ?: 20.0) + (grades["Quizzes"]?.times(0.24) ?: 24.0) +
-                (grades["Exam"]?.times(0.06) ?: 6.0) + (grades["MP"]?.times(0.30) ?: 30.0) + (grades["Final Project"]?.times(0.10) ?: 10.0)
+        var grade = 0.0
+
+        for (comp in grades.values) {
+            grade += comp.gradeWOutDrops()*comp.type.weight
+        }
+
+        return grade
     }
 
 

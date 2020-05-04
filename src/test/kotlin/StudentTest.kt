@@ -19,7 +19,7 @@ class StudentTest {
 
         // test final project grade
         studentTest.addGrade(90.0, "Final Project")
-        assert(studentTest.getFinalProject() == 90.0)
+        assert(studentTest.getFinalProject()[0] == 90.0)
     }
 
     @org.junit.jupiter.api.Test
