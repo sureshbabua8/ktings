@@ -1,9 +1,9 @@
 package hello
 
 enum class compNames(val type: String, val minDropped: Int, val weight: Double) {
-    Lab("Lab", 3, 0.05), Homework("Homework", 12, 0.20), MP("MP", 1, 0.30),
-    final_Project("Final Project", 0, 0.10), Quiz("Quiz", 3, 0.24),
-    Exam("Exam", 0, 0.06), Lecture("Lecture", 6, 0.05)
+    lab("lab", 3, 0.05), homework("homework", 12, 0.20), mp("mp", 1, 0.30),
+    finalProject("final project", 0, 0.10), quiz("quiz", 3, 0.24),
+    exam("exam", 0, 0.06), lecture("lecture", 6, 0.05)
 }
 
 data class Component(val type: compNames, var grade: Double) {
@@ -63,60 +63,60 @@ class Student(val netid: String) {
     // getters
 
     fun getLabs(): MutableList<Double> {
-        return grades["Lab"]!!.getAssignments()
+        return grades["lab"]!!.getAssignments()
     }
 
     fun getHomeworks(): MutableList<Double> {
-        return grades["Homework"]!!.getAssignments()
+        return grades["homework"]!!.getAssignments()
     }
 
     fun getMps(): MutableList<Double> {
-        return grades["MP"]!!.getAssignments()
+        return grades["mp"]!!.getAssignments()
     }
 
     fun getFinalProject(): MutableList<Double> {
-        return grades["Final Project"]!!.getAssignments()
+        return grades["final project"]!!.getAssignments()
     }
 
     fun getQuizzes(): MutableList<Double> {
-        return grades["Quiz"]!!.getAssignments()
+        return grades["quiz"]!!.getAssignments()
     }
 
     fun getExams(): MutableList<Double> {
-        return grades["Exam"]!!.getAssignments()
+        return grades["exam"]!!.getAssignments()
     }
 
     fun getLectures(): MutableList<Double> {
-        return grades["Lecture"]!!.getAssignments()
+        return grades["lecture"]!!.getAssignments()
     }
 
     // setters
     fun setLabs(setList: MutableList<Double>): Unit {
-        grades["Lab"]!!.setAssignment(setList)
+        grades["lab"]!!.setAssignment(setList)
     }
 
     fun setHomeworks(setList: MutableList<Double>): Unit {
-        grades["Homework"]!!.setAssignment(setList)
+        grades["homework"]!!.setAssignment(setList)
     }
 
     fun setMps(setList: MutableList<Double>): Unit {
-        grades["MP"]!!.setAssignment(setList)
+        grades["mp"]!!.setAssignment(setList)
     }
 
     fun setQuizzes(setList: MutableList<Double>): Unit {
-        grades["Quiz"]!!.setAssignment(setList)
+        grades["quiz"]!!.setAssignment(setList)
     }
 
     fun setExams(setList: MutableList<Double>): Unit {
-        grades["Exam"]!!.setAssignment(setList)
+        grades["exam"]!!.setAssignment(setList)
     }
 
     fun setLectures(setList: MutableList<Double>): Unit {
-        grades["Lecture"]!!.setAssignment(setList)
+        grades["lecture"]!!.setAssignment(setList)
     }
 
     fun setFinalProject(setProject: Double): Unit {
-        grades["Lab"]!!.setAssignment(mutableListOf(setProject))
+        grades["lab"]!!.setAssignment(mutableListOf(setProject))
     }
 
     // logistics
@@ -128,6 +128,9 @@ class Student(val netid: String) {
     }
 
     fun calculateGradeDrops(gradeType: String): Double? {
+        if (gradeType.equals("overview")) {
+            return getOverallGradeDrops()
+        }
         return if (grades.containsKey(gradeType)) {
             grades[gradeType]!!.gradeWithDrops()
         } else {
@@ -136,6 +139,9 @@ class Student(val netid: String) {
     }
 
     fun calculateGradeNoDrops(gradeType: String): Double? {
+        if (gradeType.equals("overview")) {
+            return getOverallGradeNoDrops()
+        }
         return if (grades.containsKey(gradeType)) {
             grades[gradeType]!!.gradeWOutDrops()
         } else {

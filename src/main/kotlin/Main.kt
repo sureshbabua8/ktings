@@ -2,7 +2,6 @@
 
 package hello
 
-import com.google.gson.JsonObject
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -34,15 +33,30 @@ data class Course(val students: MutableMap<String, Student>) {
         students[netid] = Student(netid)
     }
 
-    fun getAllGrades(type: String): Sequence<Double> {
-        return sequenceOf()
+    fun addStudent(student: Student): Unit {
+        students[student.netid] = student
     }
+
+    fun getStudentComps(type: String): Pair<Sequence<Double>, Sequence<Double>> {
+        when (type) {
+            "overview" -> {
+                return Pair(students.values.map { it.getOverallGradeNoDrops()!! }.asSequence(),
+                    students.values.map { it.getOverallGradeDrops()!! }.asSequence())
+            }
+            else -> {
+                return Pair(students.values.map { it.calculateGradeNoDrops(type)!! }.asSequence(),
+                    students.values.map { it.calculateGradeDrops(type)!! }.asSequence())
+            }
+        }
+    }
+
 }
 
 private var course = Course(mutableMapOf())
 
 fun Application.viewCourse() {
-
+    var compTypes: MutableList<String> = compNames.values().map { it.type } as MutableList<String>
+    compTypes.add("overview")
     install(ContentNegotiation) {
         gson {
             setPrettyPrinting()
@@ -54,55 +68,62 @@ fun Application.viewCourse() {
             call.respondText(course.welcome())
         }
 
-        get("/{first}") {
-            val id = call.parameters["first"]
-            when (id) {
-                "course" -> call.respondText("Course is doing fine!")
+        get("/{value}") {
+            when (val id = call.parameters["value"]) {
+                "course" -> {
+                    call.respond(course)
+                }
                 else -> {
                     if (course.students.containsKey(id)) {
-                        val withoutDrops = course.students[id]!!.getOverallGradeNoDrops()
-                        val withDrops = course.students[id]!!.getOverallGradeDrops()
-                        call.respondText("$id's overall grade without drops is $withoutDrops " +
-                                "\n$id's overall grade with drops is $withDrops")
+                        call.respond(course.students[id]!!)
                     } else {
-                        call.respondText("invalid netid!")
+                        call.respondText("Invalid call!")
                     }
-
                 }
             }
+
         }
 
-        get("/addStudent/{netid}") {
-            val student = call.parameters["netid"]!!
-            course.students.putIfAbsent(student, Student(student))
-            call.respondText("Added $student to CS 125!")
-        }
-        get("/{netid}/{component}") {
-            val netid = call.parameters["netid"]!!
-            val component = call.parameters["component"]!!
-            if (course.students.containsKey(call.parameters["netid"])) {
-                val gradeNoDrops = course.students[netid]!!.calculateGradeNoDrops(component)
-                val gradeDrops = course.students[netid]!!.calculateGradeDrops(component)
-                call.respondText("$netid's $component grade without drops is $gradeNoDrops \n$netid's $component " +
-                        "grade with drops is $gradeDrops")
-            }
-        }
-
-        post("/gradebook") {
+        post("/addStudent/{netid}") {
             try {
-                call.respond(call.receive<JsonObject>())
+                val request = call.receive<Student>()
+                val id = request.netid
+                course.addStudent(request)
+                call.respondText("Successfully added $id to the course!")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest)
             }
         }
 
-        get("/gradebook") {
-            call.respond(course)
+        get("/{value}/{component}") {
+            val comp = call.parameters["component"]!!
+            if (compTypes.contains(comp)) {
+                when (val id = call.parameters["value"]) {
+                    "course" -> {
+                        val dropAvg = course.getStudentComps(comp).first.average()
+                        val noDropAvg = course.getStudentComps(comp).second.average()
+
+                        call.respondText("Course average $comp without drops: $noDropAvg \nCourse average $comp with drops: $dropAvg")
+                    }
+                    else -> {
+                        val component = call.parameters["component"]!!
+                        if (course.students.containsKey(id)) {
+                            val gradeNoDrops = course.students[id]!!.calculateGradeNoDrops(component)
+                            val gradeDrops = course.students[id]!!.calculateGradeDrops(component)
+                            call.respondText("$id's $component grade without drops is $gradeNoDrops \n$id's $component " +
+                                    "grade with drops is $gradeDrops")
+                        } else {
+                            call.respond(HttpStatusCode.BadRequest)
+                        }
+                    }
+                }
+            } else {
+                call.respond(HttpStatusCode.BadRequest)
+            }
         }
 
     }
 }
 fun main() {
-//    println(Gson().toJson(course.students).toString())
     embeddedServer(Netty, port = 8000, module = Application::viewCourse).start(wait = true)
 }

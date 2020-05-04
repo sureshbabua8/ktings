@@ -19,7 +19,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-gson:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
-    compile("com.github.thomasnield:kotlin-statistics:-SNAPSHOT")
+    compile("org.nield:kotlin-statistics:1.2.1")
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
