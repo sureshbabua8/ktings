@@ -17,6 +17,8 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 
+data class Assignment(val type: String, val grade: Double)
+
 data class Course(val students: MutableMap<String, Student>) {
     init {
         addStudent("as43")
@@ -82,6 +84,19 @@ fun Application.viewCourse() {
                 }
             }
 
+        }
+
+        post("/uploadAssignment/{netid}") {
+            try {
+                val request = call.receive<Assignment>()
+                if (course.students.containsKey(call.parameters["netid"])) {
+                    course.students[call.parameters["netid"]]!!.addGrade(request.grade, request.type)
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest)
+            }
         }
 
         post("/addStudent/{netid}") {
