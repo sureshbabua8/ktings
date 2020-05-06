@@ -21,9 +21,8 @@ import io.ktor.server.netty.Netty
 
 data class Assignment(val type: String, val grade: Double)
 
-data class Greeting(val name: String)
 
-data class User(val name: String, val email: String)
+data class NewStudent(val netid: String)
 
 data class Course(val students: MutableMap<String, Student>) {
     init {
@@ -37,7 +36,7 @@ data class Course(val students: MutableMap<String, Student>) {
         return "CS 125!"
     }
 
-    private fun addStudent(netid: String): Unit {
+    fun addStudent(netid: String): Unit {
         students[netid] = Student(netid)
     }
 
@@ -113,9 +112,9 @@ fun Application.viewCourse() {
 
         post("/addStudent/{netid}") {
             try {
-                val request = call.receive<Student>()
+                val request = call.receive<NewStudent>()
                 val id = request.netid
-                course.addStudent(request)
+                course.addStudent(id)
                 call.respondText("Successfully added $id to the course!")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest)
