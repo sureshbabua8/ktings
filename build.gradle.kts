@@ -18,7 +18,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-gson:$ktorVersion")
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-pebble:$ktorVersion")
     compile("org.nield:kotlin-statistics:1.2.1")
 
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")

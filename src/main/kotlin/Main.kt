@@ -1,13 +1,15 @@
 @file:Suppress("SpellCheckingInspection")
 
 package hello
-
+import com.mitchellbosecke.pebble.loader.ClasspathLoader
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
+import io.ktor.pebble.Pebble
+import io.ktor.pebble.PebbleContent
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
@@ -19,6 +21,10 @@ import io.ktor.server.netty.Netty
 
 data class Assignment(val type: String, val grade: Double)
 
+data class Greeting(val name: String)
+
+data class User(val name: String, val email: String)
+
 data class Course(val students: MutableMap<String, Student>) {
     init {
         addStudent("as43")
@@ -28,7 +34,7 @@ data class Course(val students: MutableMap<String, Student>) {
     }
 
     fun welcome(): String {
-        return "Welcome to CS 125!"
+        return "CS 125!"
     }
 
     private fun addStudent(netid: String): Unit {
@@ -63,6 +69,12 @@ fun Application.viewCourse() {
         gson {
             setPrettyPrinting()
         }
+    }
+
+    install(Pebble) { // this: PebbleEngine.Builder
+        loader(ClasspathLoader().apply {
+            prefix = "resources/templates"
+        })
     }
 
     routing {
