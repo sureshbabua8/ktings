@@ -22,4 +22,4 @@ A simulation of the CS 125 gradebook in Kotlin.  Uses KTOR to simulate grade upd
 |   `GET`      | `/course/homework`          | retrieves course's overall homework performance with and without drops     |
 |   `GET`      | `/course/final project`     | retrieves course's overall final project grade with and without drops            |
 |  `POST`      | `/addStudent/netid`         | registers a student with the `netid` for the course |
-|  `POST`      | `/uploadAssignment/netid`         | adds assignment to a student with the `netid` if the student is registerd for the cours |
+|  `POST`      | `/uploadAssignment/netid`         | adds assignment to a student with the `netid` if the student is registered for the course |
